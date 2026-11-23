@@ -1,0 +1,56 @@
+name: Bot de promoções
+
+on:
+  schedule:
+    - cron: "17 0,1,10-23 * * *"   # de hora em hora, das 07h17 às 22h17 de Brasília (UTC-3)
+  workflow_dispatch:            # botão "Run workflow" para rodar na hora
+
+permissions:
+  contents: write
+
+concurrency:
+  group: promo-bot
+  cancel-in-progress: false
+
+jobs:
+  rodar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar CLI do Postiz
+        run: npm install -g postiz
+
+      - name: Rodar o bot
+        env:
+          ML_CLIENT_ID: ${{ secrets.ML_CLIENT_ID }}
+          ML_CLIENT_SECRET: ${{ secrets.ML_CLIENT_SECRET }}
+          ML_REFRESH_TOKEN: ${{ secrets.ML_REFRESH_TOKEN }}
+          POSTIZ_API_KEY: ${{ secrets.POSTIZ_API_KEY }}
+          POSTIZ_X_ID: ${{ secrets.POSTIZ_X_ID }}
+        run: python -m bot
+
+      # O Mercado Livre troca o refresh token a cada uso; guardamos o novo.
+      - name: Atualizar token do Mercado Livre
+        if: always() && hashFiles('.ml_refresh_token_novo') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: gh secret set ML_REFRESH_TOKEN < .ml_refresh_token_novo && rm .ml_refresh_token_novo
+
+      - name: Salvar histórico de preços
+        if: always()
+        run: |
+          git config user.name "promo-bot"
+          git config user.email "promo-bot@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "Atualiza histórico de preços"
+          git push

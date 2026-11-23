@@ -1,0 +1,8 @@
+# Uma linha por produto que o bot deve vigiar.
+# link_produto: link normal do anúncio no Mercado Livre
+# link_afiliado: o link que você gerou no painel de afiliados para ESSE produto
+# categoria: tech ou casa | preco_alvo: opcional, posta quando chegar nesse valor | ativo: sim/nao
+# Linhas que começam com # são ignoradas. Troque os exemplos abaixo pelos seus produtos.
+link_produto,link_afiliado,categoria,preco_alvo,ativo
+https://produto.mercadolivre.com.br/MLB-0000000000-exemplo-air-fryer,https://mercadolivre.com/sec/SEULINK1,casa,250,nao
+https://www.mercadolivre.com.br/exemplo-fone/p/MLB00000000,https://mercadolivre.com/sec/SEULINK2,tech,,nao

@@ -1,0 +1,13 @@
+{
+  "modo": "rascunho",
+  "desconto_minimo": 15,
+  "queda_minima": 10,
+  "janela_dias": 30,
+  "dias_minimos_historico": 5,
+  "intervalo_repost_dias": 3,
+  "queda_para_repostar": 5,
+  "max_posts_dia": 6,
+  "intervalo_minutos": 40,
+  "hora_inicio": 8,
+  "hora_fim": 23
+}
