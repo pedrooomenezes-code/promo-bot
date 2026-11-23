@@ -41,7 +41,8 @@ def main():
     token = ml.token_do_ambiente()
     integracao = os.environ.get("POSTIZ_X_ID")
     if modo != "teste" and not integracao:
-        sys.exit("Falta POSTIZ_X_ID (id do X no Postiz). Rode com --teste ou configure o secret.")
+        print("Bot ainda não configurado: falta o secret POSTIZ_X_ID (id do X no Postiz). Nada foi feito.")
+        return
 
     ultimo_modelo = None
     agendou = 0
