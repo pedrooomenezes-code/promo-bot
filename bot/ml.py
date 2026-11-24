@@ -72,7 +72,77 @@ def identificar(link):
     raise ErroML(f"Não achei o código MLB no link: {link}")
 
 
+NAVEGADOR = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+             "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36")
+
+
+def _reais(texto):
+    """'Antes: 399 reais com 90 centavos' -> 399.9"""
+    m = re.search(r"([\d.]+)\s*reais(?:\s*com\s*(\d+)\s*centavos)?", texto)
+    if not m:
+        return None
+    return float(m.group(1).replace(".", "")) + (int(m.group(2)) / 100 if m.group(2) else 0)
+
+
+def consultar_pagina(link):
+    """Plano B sem app do Mercado Livre: lê preço, título e foto da página do anúncio."""
+    _tipo, cod = identificar(link)
+    req = urllib.request.Request(link, headers={
+        "User-Agent": NAVEGADOR, "Accept-Language": "pt-BR,pt;q=0.9",
+        "Accept": "text/html,application/xhtml+xml"})
+    try:
+        with urllib.request.urlopen(req, timeout=25) as r:
+            html = r.read().decode("utf-8", errors="replace")
+    except urllib.error.HTTPError as e:
+        raise ErroML(f"HTTP {e.code} ao abrir a página {link}") from e
+
+    produto = None
+    for bloco in re.findall(r'<script[^>]*application/ld\+json[^>]*>(.*?)</script>', html, re.S):
+        try:
+            dado = json.loads(bloco)
+        except ValueError:
+            continue
+        for d in (dado if isinstance(dado, list) else [dado]):
+            if isinstance(d, dict) and d.get("@type") == "Product" and d.get("offers"):
+                produto = d
+                break
+        if produto:
+            break
+    if not produto:
+        raise ErroML(f"Página sem dados de preço (pode ter caído em verificação/captcha): {link}")
+
+    ofertas = produto["offers"]
+    oferta = ofertas[0] if isinstance(ofertas, list) else ofertas
+    if "InStock" not in str(oferta.get("availability", "InStock")):
+        return None
+    preco = float(oferta["price"])
+    imagem = produto.get("image")
+    if isinstance(imagem, list):
+        imagem = imagem[0] if imagem else None
+
+    # Preço riscado do anúncio principal (o primeiro "Antes:" da página).
+    orig = None
+    m = re.search(r'aria-label="Antes:\s*([^"]+)"', html)
+    if m:
+        v = _reais(m.group(1))
+        if v and preco < v < preco * 3:
+            orig = v
+
+    return {"id": cod, "titulo": produto.get("name", ""), "preco": preco,
+            "preco_original": orig, "foto": imagem, "full": False, "frete_gratis": False}
+
+
 def consultar(link, token=None):
+    """Tenta a API; se ela recusar (sem app/token), lê a página do anúncio."""
+    try:
+        return consultar_api(link, token)
+    except ErroML as e:
+        if token:
+            print(f"! API recusou, usando a página: {e}")
+        return consultar_pagina(link)
+
+
+def consultar_api(link, token=None):
     """Consulta o anúncio e devolve um dicionário padronizado (ou None se indisponível)."""
     tipo, cod = identificar(link)
     if tipo == "produto":

@@ -34,7 +34,9 @@ Outras travas:
 ### 1. Repositório no GitHub
 Crie um repositório **privado** e suba esta pasta.
 
-### 2. App no Mercado Livre (leitura de preço)
+### 2. App no Mercado Livre (opcional)
+Sem o app, o bot lê o preço direto da página do anúncio. O app só deixa a leitura mais estável. Se a sua conta não tiver permissão para criar aplicações ("No tenés permiso para crear aplicaciones"), pule este passo e não cadastre os secrets `ML_*` nem o `GH_PAT`.
+
 1. Acesse developers.mercadolivre.com.br, faça login e crie uma aplicação.
 2. Em Redirect URI, use qualquer endereço seu, por exemplo `https://www.google.com`.
 3. Anote o **Client ID** e o **Client Secret**.
@@ -66,7 +68,7 @@ Em Settings → Secrets and variables → Actions → New repository secret:
 | `GH_PAT` | token do passo 4 |
 
 ### 6. Ligar
-Aba Actions → "Bot de promoções" → **Run workflow**. Veja o log: cada produto aparece como "sem promoção", "já postado" ou "✔" com o texto do post.
+Aba Actions → "Bot de promoções" → **Run workflow**. Com a caixa "Só testar" marcada, ele só mostra no log os posts que faria, sem agendar nada. Veja o log: cada produto aparece como "sem promoção", "já postado" ou "✔" com o texto do post.
 
 ## Uso do dia a dia
 

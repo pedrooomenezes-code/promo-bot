@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "17 0,1,10-23 * * *"   # de hora em hora, das 07h17 às 22h17 de Brasília (UTC-3)
   workflow_dispatch:            # botão "Run workflow" para rodar na hora
+    inputs:
+      teste:
+        description: "Só testar (mostra os posts no log, não agenda nada)"
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -37,7 +42,9 @@ jobs:
           ML_REFRESH_TOKEN: ${{ secrets.ML_REFRESH_TOKEN }}
           POSTIZ_API_KEY: ${{ secrets.POSTIZ_API_KEY }}
           POSTIZ_X_ID: ${{ secrets.POSTIZ_X_ID }}
-        run: python -m bot
+          SO_TESTE: ${{ inputs.teste }}
+        run: |
+          if [ "$SO_TESTE" = "true" ]; then python -m bot --teste; else python -m bot; fi
 
       # O Mercado Livre troca o refresh token a cada uso; guardamos o novo.
       - name: Atualizar token do Mercado Livre
