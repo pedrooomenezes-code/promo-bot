@@ -94,6 +94,7 @@ def consultar_pagina(link):
     try:
         with urllib.request.urlopen(req, timeout=25) as r:
             html = r.read().decode("utf-8", errors="replace")
+            final = r.geturl()
     except urllib.error.HTTPError as e:
         raise ErroML(f"HTTP {e.code} ao abrir a página {link}") from e
 
@@ -110,6 +111,12 @@ def consultar_pagina(link):
         if produto:
             break
     if not produto:
+        titulo = re.search(r"<title[^>]*>(.*?)</title>", html, re.S)
+        meta = re.search(r'itemprop="price"\s+content="([\d.]+)"', html)
+        if os.environ.get("ML_DEBUG"):
+            print(f"  [debug] url final: {final}\n  [debug] tamanho: {len(html)} | título: {titulo.group(1).strip()[:120] if titulo else '-'}"
+                  f"\n  [debug] ld+json: {html.count('application/ld+json')} | itemprop price: {meta.group(1) if meta else '-'}"
+                  f"\n  [debug] trecho: {re.sub(r'\s+', ' ', html[:400])}")
         raise ErroML(f"Página sem dados de preço (pode ter caído em verificação/captcha): {link}")
 
     ofertas = produto["offers"]

@@ -43,6 +43,7 @@ jobs:
           POSTIZ_API_KEY: ${{ secrets.POSTIZ_API_KEY }}
           POSTIZ_X_ID: ${{ secrets.POSTIZ_X_ID }}
           SO_TESTE: ${{ inputs.teste }}
+          ML_DEBUG: ${{ inputs.teste }}
         run: |
           if [ "$SO_TESTE" = "true" ]; then python -m bot --teste; else python -m bot; fi
 
