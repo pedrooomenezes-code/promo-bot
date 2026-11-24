@@ -60,7 +60,8 @@ def token_do_ambiente():
 
 def identificar(link):
     """Devolve ('item', 'MLB123') ou ('produto', 'MLB123') a partir do link do anúncio."""
-    m = re.search(r"item_id[:=]\s*(MLB-?\d+)", link, re.I)
+    link = urllib.parse.unquote(link)
+    m = re.search(r"(?:item_id[:=]|wid=)\s*(MLB-?\d+)", link, re.I)
     if m:
         return "item", m.group(1).replace("-", "").upper()
     m = re.search(r"/p/(MLB\d+)", link, re.I)

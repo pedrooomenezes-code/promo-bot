@@ -20,12 +20,19 @@ def ler_produtos(caminho="produtos.csv"):
     with open(caminho, newline="", encoding="utf-8") as f:
         linhas = [l for l in f if l.strip() and not l.lstrip().startswith("#")]
     for row in csv.DictReader(linhas):
-        if (row.get("ativo") or "sim").strip().lower() in ("nao", "não", "n", "0"):
+        alvo = (row.get("preco_alvo") or "").strip()
+        ativo = (row.get("ativo") or "").strip().lower()
+        if alvo.lower() in ("sim", "nao", "não", "s", "n") and not ativo:
+            ativo, alvo = alvo.lower(), ""  # linha sem a coluna preco_alvo
+        if ativo in ("nao", "não", "n", "0"):
             continue
         if not row.get("link_produto") or not row.get("link_afiliado"):
             continue
-        alvo = (row.get("preco_alvo") or "").replace("R$", "").replace(".", "").replace(",", ".").strip()
-        row["preco_alvo"] = float(alvo) if alvo else None
+        try:
+            row["preco_alvo"] = float(alvo.replace("R$", "").replace(".", "").replace(",", ".")) if alvo else None
+        except ValueError:
+            print(f"! preco_alvo inválido ignorado: {alvo}")
+            row["preco_alvo"] = None
         yield row
 
 
