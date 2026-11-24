@@ -4,5 +4,5 @@
 # categoria: tech ou casa | preco_alvo: opcional, posta quando chegar nesse valor | ativo: sim/nao
 # Linhas que começam com # são ignoradas. Troque os exemplos abaixo pelos seus produtos.
 link_produto,link_afiliado,categoria,preco_alvo,ativo
-https://produto.mercadolivre.com.br/MLB-0000000000-exemplo-air-fryer,https://mercadolivre.com/sec/SEULINK1,casa,250,nao
-https://www.mercadolivre.com.br/exemplo-fone/p/MLB00000000,https://mercadolivre.com/sec/SEULINK2,tech,,nao
+https://www.mercadolivre.com.br/console-playstation-5-pro-2tb-branco-sony-bivolt-branco/p/MLB41975964?pdp_filters=item_id%3AMLB5584574953&extra_comm=true&brand_comm=false#polycard_client=affiliates&wid=MLB5584574953&sid=affiliates,https://meli.la/2Hho37x,tech,sim
+https://www.mercadolivre.com.br/baba-eletronica-motorola-hd-monitor-5-c-zoom-wi-fi-pip1510/p/MLB34114750?pdp_filters=deal%3AMLB1578289-1&extra_comm=false&brand_comm=true#polycard_client=affiliates&wid=MLB5068865874&sid=affiliates,https://meli.la/2CJR3UW,baby,sim
